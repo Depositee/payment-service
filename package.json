@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "@grpc/grpc-js": "^1.12.0",
+    "@types/pg": "^8.11.10",
+    "fs": "^0.0.1-security",
+    "pg": "^8.13.0",
+    "save-dev": "^0.0.1-security",
+    "ts-proto": "^2.2.2",
+    "typescript": "^5.6.2"
+  },
+  "name": "payment-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx ts-node src/server/server.ts",
+    "gen": "protoc --plugin=protoc-gen-ts_proto=.\\node_modules\\.bin\\protoc-gen-ts_proto.cmd --ts_proto_out=./src/port/gprc/gen ./protos/payment.proto --ts_proto_opt=outputServices=grpc-js,env=node,esModuleInterop=true",
+    "proto:build": "cd proto; buf build; cd ..",
+    "codegen:buf": "cd proto; buf generate; cd .."
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
