@@ -2,25 +2,24 @@ syntax ="proto3";
 
 service PaymentService {
     rpc GetAllPaymentByUserId(UserId) returns (PaymentList) {}
-    rpc MakePayment(PaymentRequest) returns (Payment) {}
+    // rpc MakePayment(PaymentRequest) returns (Payment) {}
 }
 
 message Empty{}
 
 message UserId{
-    string id=1;
+    int32 id=1;
 }
 
 message Payment {
-    UserId senderId =1;
-    UserId receiverId =2;
-    int32 price=3;
-    string note=4;
+    int32 senderId =1;
+    int32 receiverId =2;
+    int32 amount=3;
 }
 message PaymentRequest{
     Payment paymentDetail=1;
 }
 
 message PaymentList{
-    repeated Payment payment=1;
+    repeated Payment payments=1;
 }

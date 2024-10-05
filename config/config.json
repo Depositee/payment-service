@@ -1,1 +1,13 @@
-{}
+{
+  "serverConfig": {
+    "host": "localhost",
+    "port": 8080
+  },
+  "databaseConfig": {
+    "host": "localhost",
+    "port": 5432,
+    "user": "postgres",
+    "password": "guest",
+    "database": "postgres"
+  }
+}

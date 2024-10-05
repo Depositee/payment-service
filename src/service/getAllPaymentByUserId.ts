@@ -1,7 +1,7 @@
-import PaymentRepo,{Payment as PaymentDBValue} from "../adapter/db/payment/repo";
-import { Payment } from "../../protos/payment_tmp";
+import PaymentRepo from "../adapter/db/PostgreSQL/payment/repo";
+import Payment from "../adapter/db/PostgreSQL/payment/type";
 
-export default class getPaymentHistoryByUserIdHandler{
+export default class GetPaymentHistoryByUserIdService{
     constructor(
         private paymentRepo:PaymentRepo
     ) {}
@@ -9,29 +9,4 @@ export default class getPaymentHistoryByUserIdHandler{
         const result = await this.paymentRepo.getPaymentHistoryByUserId(userId);
         return result;
     }
-    private mapPaymentToPayment
 }
-// export function login(
-//     call: ServerUnaryCall<UserId,PaymentList>,
-//     callback: sendUnaryData<PaymentList>
-//   ){
-//     const requestData = call.request;
-//     // const user = users.find(
-//     //   (user) =>
-//     //     user.username === requestData.username &&
-//     //     user.password === requestData.password
-//     // );
-  
-//     // if (user) {
-//     //   const result: LoginResult = {
-//     //     loginCode: LoginCode.SUCCESS,
-//     //     token: "RandomSecretToken",
-//     //   };
-//     //   callback(null, result);
-//     // } else {
-//     //   const result: LoginResult = {
-//     //     loginCode: LoginCode.FAIL,
-//     //   };
-//     //   callback(null, result);
-//     // }
-//   };

@@ -25,14 +25,13 @@ export interface Empty {
 }
 
 export interface UserId {
-  id: string;
+  id: number;
 }
 
 export interface Payment {
-  senderId: UserId | undefined;
-  receiverId: UserId | undefined;
-  price: number;
-  note: string;
+  senderId: number;
+  receiverId: number;
+  amount: number;
 }
 
 export interface PaymentRequest {
@@ -40,7 +39,7 @@ export interface PaymentRequest {
 }
 
 export interface PaymentList {
-  payment: Payment[];
+  payments: Payment[];
 }
 
 function createBaseEmpty(): Empty {
@@ -87,13 +86,13 @@ export const Empty: MessageFns<Empty> = {
 };
 
 function createBaseUserId(): UserId {
-  return { id: "" };
+  return { id: 0 };
 }
 
 export const UserId: MessageFns<UserId> = {
   encode(message: UserId, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "") {
-      writer.uint32(10).string(message.id);
+    if (message.id !== 0) {
+      writer.uint32(8).int32(message.id);
     }
     return writer;
   },
@@ -106,11 +105,11 @@ export const UserId: MessageFns<UserId> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
+          if (tag !== 8) {
             break;
           }
 
-          message.id = reader.string();
+          message.id = reader.int32();
           continue;
         }
       }
@@ -123,13 +122,13 @@ export const UserId: MessageFns<UserId> = {
   },
 
   fromJSON(object: any): UserId {
-    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
+    return { id: isSet(object.id) ? globalThis.Number(object.id) : 0 };
   },
 
   toJSON(message: UserId): unknown {
     const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
+    if (message.id !== 0) {
+      obj.id = Math.round(message.id);
     }
     return obj;
   },
@@ -139,28 +138,25 @@ export const UserId: MessageFns<UserId> = {
   },
   fromPartial<I extends Exact<DeepPartial<UserId>, I>>(object: I): UserId {
     const message = createBaseUserId();
-    message.id = object.id ?? "";
+    message.id = object.id ?? 0;
     return message;
   },
 };
 
 function createBasePayment(): Payment {
-  return { senderId: undefined, receiverId: undefined, price: 0, note: "" };
+  return { senderId: 0, receiverId: 0, amount: 0 };
 }
 
 export const Payment: MessageFns<Payment> = {
   encode(message: Payment, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.senderId !== undefined) {
-      UserId.encode(message.senderId, writer.uint32(10).fork()).join();
+    if (message.senderId !== 0) {
+      writer.uint32(8).int32(message.senderId);
     }
-    if (message.receiverId !== undefined) {
-      UserId.encode(message.receiverId, writer.uint32(18).fork()).join();
+    if (message.receiverId !== 0) {
+      writer.uint32(16).int32(message.receiverId);
     }
-    if (message.price !== 0) {
-      writer.uint32(24).int32(message.price);
-    }
-    if (message.note !== "") {
-      writer.uint32(34).string(message.note);
+    if (message.amount !== 0) {
+      writer.uint32(24).int32(message.amount);
     }
     return writer;
   },
@@ -173,19 +169,19 @@ export const Payment: MessageFns<Payment> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
+          if (tag !== 8) {
             break;
           }
 
-          message.senderId = UserId.decode(reader, reader.uint32());
+          message.senderId = reader.int32();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 16) {
             break;
           }
 
-          message.receiverId = UserId.decode(reader, reader.uint32());
+          message.receiverId = reader.int32();
           continue;
         }
         case 3: {
@@ -193,15 +189,7 @@ export const Payment: MessageFns<Payment> = {
             break;
           }
 
-          message.price = reader.int32();
-          continue;
-        }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.note = reader.string();
+          message.amount = reader.int32();
           continue;
         }
       }
@@ -215,26 +203,22 @@ export const Payment: MessageFns<Payment> = {
 
   fromJSON(object: any): Payment {
     return {
-      senderId: isSet(object.senderId) ? UserId.fromJSON(object.senderId) : undefined,
-      receiverId: isSet(object.receiverId) ? UserId.fromJSON(object.receiverId) : undefined,
-      price: isSet(object.price) ? globalThis.Number(object.price) : 0,
-      note: isSet(object.note) ? globalThis.String(object.note) : "",
+      senderId: isSet(object.senderId) ? globalThis.Number(object.senderId) : 0,
+      receiverId: isSet(object.receiverId) ? globalThis.Number(object.receiverId) : 0,
+      amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
     };
   },
 
   toJSON(message: Payment): unknown {
     const obj: any = {};
-    if (message.senderId !== undefined) {
-      obj.senderId = UserId.toJSON(message.senderId);
+    if (message.senderId !== 0) {
+      obj.senderId = Math.round(message.senderId);
     }
-    if (message.receiverId !== undefined) {
-      obj.receiverId = UserId.toJSON(message.receiverId);
+    if (message.receiverId !== 0) {
+      obj.receiverId = Math.round(message.receiverId);
     }
-    if (message.price !== 0) {
-      obj.price = Math.round(message.price);
-    }
-    if (message.note !== "") {
-      obj.note = message.note;
+    if (message.amount !== 0) {
+      obj.amount = Math.round(message.amount);
     }
     return obj;
   },
@@ -244,14 +228,9 @@ export const Payment: MessageFns<Payment> = {
   },
   fromPartial<I extends Exact<DeepPartial<Payment>, I>>(object: I): Payment {
     const message = createBasePayment();
-    message.senderId = (object.senderId !== undefined && object.senderId !== null)
-      ? UserId.fromPartial(object.senderId)
-      : undefined;
-    message.receiverId = (object.receiverId !== undefined && object.receiverId !== null)
-      ? UserId.fromPartial(object.receiverId)
-      : undefined;
-    message.price = object.price ?? 0;
-    message.note = object.note ?? "";
+    message.senderId = object.senderId ?? 0;
+    message.receiverId = object.receiverId ?? 0;
+    message.amount = object.amount ?? 0;
     return message;
   },
 };
@@ -317,12 +296,12 @@ export const PaymentRequest: MessageFns<PaymentRequest> = {
 };
 
 function createBasePaymentList(): PaymentList {
-  return { payment: [] };
+  return { payments: [] };
 }
 
 export const PaymentList: MessageFns<PaymentList> = {
   encode(message: PaymentList, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    for (const v of message.payment) {
+    for (const v of message.payments) {
       Payment.encode(v!, writer.uint32(10).fork()).join();
     }
     return writer;
@@ -340,7 +319,7 @@ export const PaymentList: MessageFns<PaymentList> = {
             break;
           }
 
-          message.payment.push(Payment.decode(reader, reader.uint32()));
+          message.payments.push(Payment.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -354,14 +333,14 @@ export const PaymentList: MessageFns<PaymentList> = {
 
   fromJSON(object: any): PaymentList {
     return {
-      payment: globalThis.Array.isArray(object?.payment) ? object.payment.map((e: any) => Payment.fromJSON(e)) : [],
+      payments: globalThis.Array.isArray(object?.payments) ? object.payments.map((e: any) => Payment.fromJSON(e)) : [],
     };
   },
 
   toJSON(message: PaymentList): unknown {
     const obj: any = {};
-    if (message.payment?.length) {
-      obj.payment = message.payment.map((e) => Payment.toJSON(e));
+    if (message.payments?.length) {
+      obj.payments = message.payments.map((e) => Payment.toJSON(e));
     }
     return obj;
   },
@@ -371,7 +350,7 @@ export const PaymentList: MessageFns<PaymentList> = {
   },
   fromPartial<I extends Exact<DeepPartial<PaymentList>, I>>(object: I): PaymentList {
     const message = createBasePaymentList();
-    message.payment = object.payment?.map((e) => Payment.fromPartial(e)) || [];
+    message.payments = object.payments?.map((e) => Payment.fromPartial(e)) || [];
     return message;
   },
 };
@@ -387,20 +366,10 @@ export const PaymentServiceService = {
     responseSerialize: (value: PaymentList) => Buffer.from(PaymentList.encode(value).finish()),
     responseDeserialize: (value: Buffer) => PaymentList.decode(value),
   },
-  makePayment: {
-    path: "/PaymentService/MakePayment",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: PaymentRequest) => Buffer.from(PaymentRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => PaymentRequest.decode(value),
-    responseSerialize: (value: Payment) => Buffer.from(Payment.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => Payment.decode(value),
-  },
 } as const;
 
 export interface PaymentServiceServer extends UntypedServiceImplementation {
   getAllPaymentByUserId: handleUnaryCall<UserId, PaymentList>;
-  makePayment: handleUnaryCall<PaymentRequest, Payment>;
 }
 
 export interface PaymentServiceClient extends Client {
@@ -418,21 +387,6 @@ export interface PaymentServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: PaymentList) => void,
-  ): ClientUnaryCall;
-  makePayment(
-    request: PaymentRequest,
-    callback: (error: ServiceError | null, response: Payment) => void,
-  ): ClientUnaryCall;
-  makePayment(
-    request: PaymentRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: Payment) => void,
-  ): ClientUnaryCall;
-  makePayment(
-    request: PaymentRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: Payment) => void,
   ): ClientUnaryCall;
 }
 

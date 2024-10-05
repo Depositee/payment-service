@@ -1,13 +1,12 @@
 import { Pool } from 'pg';
-import DB from './type';
 
-export default function createDBConnection(
+export default function createPostgreSQLDBConnection(
     user: string,
     host: string,
     database: string,
     password: string,
     port: number
-): DB {
+): Pool {
     return new Pool({
         user: user,
         host: host,

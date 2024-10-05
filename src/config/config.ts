@@ -1,9 +1,9 @@
 import {existsSync,readFileSync} from 'fs';
-import Config from './config.model';
+import Config from './config.type';
 
 export default function getConfig():Config{
-    const LOCAL_CONFIG_FILE_PATH = '../../config/config.local.json';
-    const DEFAULT_CONFIG_FILE_PATH = '../../config/config.json';
+    const LOCAL_CONFIG_FILE_PATH = './config/config.local.json';
+    const DEFAULT_CONFIG_FILE_PATH = './config/config.json';
   
     if (existsSync(LOCAL_CONFIG_FILE_PATH)) {
       return readConfigFile(LOCAL_CONFIG_FILE_PATH);
