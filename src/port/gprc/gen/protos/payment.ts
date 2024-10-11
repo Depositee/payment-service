@@ -32,6 +32,13 @@ export interface Payment {
   senderId: number;
   receiverId: number;
   amount: number;
+  currency: string;
+}
+
+export interface Balance {
+  userId: number;
+  balance: number;
+  currency: string;
 }
 
 export interface PaymentRequest {
@@ -144,7 +151,7 @@ export const UserId: MessageFns<UserId> = {
 };
 
 function createBasePayment(): Payment {
-  return { senderId: 0, receiverId: 0, amount: 0 };
+  return { senderId: 0, receiverId: 0, amount: 0, currency: "" };
 }
 
 export const Payment: MessageFns<Payment> = {
@@ -157,6 +164,9 @@ export const Payment: MessageFns<Payment> = {
     }
     if (message.amount !== 0) {
       writer.uint32(24).int32(message.amount);
+    }
+    if (message.currency !== "") {
+      writer.uint32(34).string(message.currency);
     }
     return writer;
   },
@@ -192,6 +202,14 @@ export const Payment: MessageFns<Payment> = {
           message.amount = reader.int32();
           continue;
         }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.currency = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -206,6 +224,7 @@ export const Payment: MessageFns<Payment> = {
       senderId: isSet(object.senderId) ? globalThis.Number(object.senderId) : 0,
       receiverId: isSet(object.receiverId) ? globalThis.Number(object.receiverId) : 0,
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
+      currency: isSet(object.currency) ? globalThis.String(object.currency) : "",
     };
   },
 
@@ -220,6 +239,9 @@ export const Payment: MessageFns<Payment> = {
     if (message.amount !== 0) {
       obj.amount = Math.round(message.amount);
     }
+    if (message.currency !== "") {
+      obj.currency = message.currency;
+    }
     return obj;
   },
 
@@ -231,6 +253,99 @@ export const Payment: MessageFns<Payment> = {
     message.senderId = object.senderId ?? 0;
     message.receiverId = object.receiverId ?? 0;
     message.amount = object.amount ?? 0;
+    message.currency = object.currency ?? "";
+    return message;
+  },
+};
+
+function createBaseBalance(): Balance {
+  return { userId: 0, balance: 0, currency: "" };
+}
+
+export const Balance: MessageFns<Balance> = {
+  encode(message: Balance, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.userId !== 0) {
+      writer.uint32(8).int32(message.userId);
+    }
+    if (message.balance !== 0) {
+      writer.uint32(16).int32(message.balance);
+    }
+    if (message.currency !== "") {
+      writer.uint32(26).string(message.currency);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Balance {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBalance();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.userId = reader.int32();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.balance = reader.int32();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.currency = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Balance {
+    return {
+      userId: isSet(object.userId) ? globalThis.Number(object.userId) : 0,
+      balance: isSet(object.balance) ? globalThis.Number(object.balance) : 0,
+      currency: isSet(object.currency) ? globalThis.String(object.currency) : "",
+    };
+  },
+
+  toJSON(message: Balance): unknown {
+    const obj: any = {};
+    if (message.userId !== 0) {
+      obj.userId = Math.round(message.userId);
+    }
+    if (message.balance !== 0) {
+      obj.balance = Math.round(message.balance);
+    }
+    if (message.currency !== "") {
+      obj.currency = message.currency;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Balance>, I>>(base?: I): Balance {
+    return Balance.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Balance>, I>>(object: I): Balance {
+    const message = createBaseBalance();
+    message.userId = object.userId ?? 0;
+    message.balance = object.balance ?? 0;
+    message.currency = object.currency ?? "";
     return message;
   },
 };
@@ -366,10 +481,30 @@ export const PaymentServiceService = {
     responseSerialize: (value: PaymentList) => Buffer.from(PaymentList.encode(value).finish()),
     responseDeserialize: (value: Buffer) => PaymentList.decode(value),
   },
+  makePayment: {
+    path: "/PaymentService/MakePayment",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: PaymentRequest) => Buffer.from(PaymentRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => PaymentRequest.decode(value),
+    responseSerialize: (value: Payment) => Buffer.from(Payment.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Payment.decode(value),
+  },
+  getBalance: {
+    path: "/PaymentService/GetBalance",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: UserId) => Buffer.from(UserId.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => UserId.decode(value),
+    responseSerialize: (value: Balance) => Buffer.from(Balance.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Balance.decode(value),
+  },
 } as const;
 
 export interface PaymentServiceServer extends UntypedServiceImplementation {
   getAllPaymentByUserId: handleUnaryCall<UserId, PaymentList>;
+  makePayment: handleUnaryCall<PaymentRequest, Payment>;
+  getBalance: handleUnaryCall<UserId, Balance>;
 }
 
 export interface PaymentServiceClient extends Client {
@@ -387,6 +522,33 @@ export interface PaymentServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: PaymentList) => void,
+  ): ClientUnaryCall;
+  makePayment(
+    request: PaymentRequest,
+    callback: (error: ServiceError | null, response: Payment) => void,
+  ): ClientUnaryCall;
+  makePayment(
+    request: PaymentRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Payment) => void,
+  ): ClientUnaryCall;
+  makePayment(
+    request: PaymentRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Payment) => void,
+  ): ClientUnaryCall;
+  getBalance(request: UserId, callback: (error: ServiceError | null, response: Balance) => void): ClientUnaryCall;
+  getBalance(
+    request: UserId,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Balance) => void,
+  ): ClientUnaryCall;
+  getBalance(
+    request: UserId,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Balance) => void,
   ): ClientUnaryCall;
 }
 
