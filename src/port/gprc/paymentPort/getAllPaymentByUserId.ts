@@ -29,5 +29,6 @@ function mapPaymentToPaymentProto(payment:Payment):PaymentProto{
       senderId: payment.sender_id,
       receiverId: payment.reciver_id,
       amount: payment.amount,
+        currency: payment.currency,
     }
   }

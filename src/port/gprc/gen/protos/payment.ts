@@ -18,6 +18,7 @@ import {
   type ServiceError,
   type UntypedServiceImplementation,
 } from "@grpc/grpc-js";
+import { Timestamp } from "../google/protobuf/timestamp";
 
 export const protobufPackage = "";
 
@@ -35,14 +36,20 @@ export interface Payment {
   currency: string;
 }
 
+export interface PaymentResponse {
+  id: number;
+  senderId: number;
+  receiverId: number;
+  amount: number;
+  currency: string;
+  createdAt: Date | undefined;
+  updatedAt: Date | undefined;
+}
+
 export interface Balance {
   userId: number;
   balance: number;
   currency: string;
-}
-
-export interface PaymentRequest {
-  paymentDetail: Payment | undefined;
 }
 
 export interface PaymentList {
@@ -258,6 +265,162 @@ export const Payment: MessageFns<Payment> = {
   },
 };
 
+function createBasePaymentResponse(): PaymentResponse {
+  return { id: 0, senderId: 0, receiverId: 0, amount: 0, currency: "", createdAt: undefined, updatedAt: undefined };
+}
+
+export const PaymentResponse: MessageFns<PaymentResponse> = {
+  encode(message: PaymentResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== 0) {
+      writer.uint32(8).int32(message.id);
+    }
+    if (message.senderId !== 0) {
+      writer.uint32(16).int32(message.senderId);
+    }
+    if (message.receiverId !== 0) {
+      writer.uint32(24).int32(message.receiverId);
+    }
+    if (message.amount !== 0) {
+      writer.uint32(32).int32(message.amount);
+    }
+    if (message.currency !== "") {
+      writer.uint32(42).string(message.currency);
+    }
+    if (message.createdAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(50).fork()).join();
+    }
+    if (message.updatedAt !== undefined) {
+      Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(58).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): PaymentResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePaymentResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.id = reader.int32();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.senderId = reader.int32();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.receiverId = reader.int32();
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.amount = reader.int32();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.currency = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PaymentResponse {
+    return {
+      id: isSet(object.id) ? globalThis.Number(object.id) : 0,
+      senderId: isSet(object.senderId) ? globalThis.Number(object.senderId) : 0,
+      receiverId: isSet(object.receiverId) ? globalThis.Number(object.receiverId) : 0,
+      amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
+      currency: isSet(object.currency) ? globalThis.String(object.currency) : "",
+      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
+      updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
+    };
+  },
+
+  toJSON(message: PaymentResponse): unknown {
+    const obj: any = {};
+    if (message.id !== 0) {
+      obj.id = Math.round(message.id);
+    }
+    if (message.senderId !== 0) {
+      obj.senderId = Math.round(message.senderId);
+    }
+    if (message.receiverId !== 0) {
+      obj.receiverId = Math.round(message.receiverId);
+    }
+    if (message.amount !== 0) {
+      obj.amount = Math.round(message.amount);
+    }
+    if (message.currency !== "") {
+      obj.currency = message.currency;
+    }
+    if (message.createdAt !== undefined) {
+      obj.createdAt = message.createdAt.toISOString();
+    }
+    if (message.updatedAt !== undefined) {
+      obj.updatedAt = message.updatedAt.toISOString();
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PaymentResponse>, I>>(base?: I): PaymentResponse {
+    return PaymentResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PaymentResponse>, I>>(object: I): PaymentResponse {
+    const message = createBasePaymentResponse();
+    message.id = object.id ?? 0;
+    message.senderId = object.senderId ?? 0;
+    message.receiverId = object.receiverId ?? 0;
+    message.amount = object.amount ?? 0;
+    message.currency = object.currency ?? "";
+    message.createdAt = object.createdAt ?? undefined;
+    message.updatedAt = object.updatedAt ?? undefined;
+    return message;
+  },
+};
+
 function createBaseBalance(): Balance {
   return { userId: 0, balance: 0, currency: "" };
 }
@@ -350,66 +513,6 @@ export const Balance: MessageFns<Balance> = {
   },
 };
 
-function createBasePaymentRequest(): PaymentRequest {
-  return { paymentDetail: undefined };
-}
-
-export const PaymentRequest: MessageFns<PaymentRequest> = {
-  encode(message: PaymentRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.paymentDetail !== undefined) {
-      Payment.encode(message.paymentDetail, writer.uint32(10).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): PaymentRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBasePaymentRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.paymentDetail = Payment.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): PaymentRequest {
-    return { paymentDetail: isSet(object.paymentDetail) ? Payment.fromJSON(object.paymentDetail) : undefined };
-  },
-
-  toJSON(message: PaymentRequest): unknown {
-    const obj: any = {};
-    if (message.paymentDetail !== undefined) {
-      obj.paymentDetail = Payment.toJSON(message.paymentDetail);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<PaymentRequest>, I>>(base?: I): PaymentRequest {
-    return PaymentRequest.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<PaymentRequest>, I>>(object: I): PaymentRequest {
-    const message = createBasePaymentRequest();
-    message.paymentDetail = (object.paymentDetail !== undefined && object.paymentDetail !== null)
-      ? Payment.fromPartial(object.paymentDetail)
-      : undefined;
-    return message;
-  },
-};
-
 function createBasePaymentList(): PaymentList {
   return { payments: [] };
 }
@@ -485,26 +588,16 @@ export const PaymentServiceService = {
     path: "/PaymentService/MakePayment",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: PaymentRequest) => Buffer.from(PaymentRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => PaymentRequest.decode(value),
-    responseSerialize: (value: Payment) => Buffer.from(Payment.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => Payment.decode(value),
-  },
-  getBalance: {
-    path: "/PaymentService/GetBalance",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: UserId) => Buffer.from(UserId.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => UserId.decode(value),
-    responseSerialize: (value: Balance) => Buffer.from(Balance.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => Balance.decode(value),
+    requestSerialize: (value: Payment) => Buffer.from(Payment.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => Payment.decode(value),
+    responseSerialize: (value: PaymentResponse) => Buffer.from(PaymentResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => PaymentResponse.decode(value),
   },
 } as const;
 
 export interface PaymentServiceServer extends UntypedServiceImplementation {
   getAllPaymentByUserId: handleUnaryCall<UserId, PaymentList>;
-  makePayment: handleUnaryCall<PaymentRequest, Payment>;
-  getBalance: handleUnaryCall<UserId, Balance>;
+  makePayment: handleUnaryCall<Payment, PaymentResponse>;
 }
 
 export interface PaymentServiceClient extends Client {
@@ -524,31 +617,19 @@ export interface PaymentServiceClient extends Client {
     callback: (error: ServiceError | null, response: PaymentList) => void,
   ): ClientUnaryCall;
   makePayment(
-    request: PaymentRequest,
-    callback: (error: ServiceError | null, response: Payment) => void,
+    request: Payment,
+    callback: (error: ServiceError | null, response: PaymentResponse) => void,
   ): ClientUnaryCall;
   makePayment(
-    request: PaymentRequest,
+    request: Payment,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: Payment) => void,
+    callback: (error: ServiceError | null, response: PaymentResponse) => void,
   ): ClientUnaryCall;
   makePayment(
-    request: PaymentRequest,
+    request: Payment,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: Payment) => void,
-  ): ClientUnaryCall;
-  getBalance(request: UserId, callback: (error: ServiceError | null, response: Balance) => void): ClientUnaryCall;
-  getBalance(
-    request: UserId,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: Balance) => void,
-  ): ClientUnaryCall;
-  getBalance(
-    request: UserId,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: Balance) => void,
+    callback: (error: ServiceError | null, response: PaymentResponse) => void,
   ): ClientUnaryCall;
 }
 
@@ -558,6 +639,50 @@ export const PaymentServiceClient = makeGenericClientConstructor(
 ) as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): PaymentServiceClient;
   service: typeof PaymentServiceService;
+  serviceName: string;
+};
+
+export type BalanceServiceService = typeof BalanceServiceService;
+export const BalanceServiceService = {
+  getBalanceByUserId: {
+    path: "/BalanceService/GetBalanceByUserId",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: UserId) => Buffer.from(UserId.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => UserId.decode(value),
+    responseSerialize: (value: Balance) => Buffer.from(Balance.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => Balance.decode(value),
+  },
+} as const;
+
+export interface BalanceServiceServer extends UntypedServiceImplementation {
+  getBalanceByUserId: handleUnaryCall<UserId, Balance>;
+}
+
+export interface BalanceServiceClient extends Client {
+  getBalanceByUserId(
+    request: UserId,
+    callback: (error: ServiceError | null, response: Balance) => void,
+  ): ClientUnaryCall;
+  getBalanceByUserId(
+    request: UserId,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: Balance) => void,
+  ): ClientUnaryCall;
+  getBalanceByUserId(
+    request: UserId,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: Balance) => void,
+  ): ClientUnaryCall;
+}
+
+export const BalanceServiceClient = makeGenericClientConstructor(
+  BalanceServiceService,
+  "BalanceService",
+) as unknown as {
+  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): BalanceServiceClient;
+  service: typeof BalanceServiceService;
   serviceName: string;
 };
 
@@ -572,6 +697,28 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function toTimestamp(date: Date): Timestamp {
+  const seconds = Math.trunc(date.getTime() / 1_000);
+  const nanos = (date.getTime() % 1_000) * 1_000_000;
+  return { seconds, nanos };
+}
+
+function fromTimestamp(t: Timestamp): Date {
+  let millis = (t.seconds || 0) * 1_000;
+  millis += (t.nanos || 0) / 1_000_000;
+  return new globalThis.Date(millis);
+}
+
+function fromJsonTimestamp(o: any): Date {
+  if (o instanceof globalThis.Date) {
+    return o;
+  } else if (typeof o === "string") {
+    return new globalThis.Date(o);
+  } else {
+    return fromTimestamp(Timestamp.fromJSON(o));
+  }
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;
