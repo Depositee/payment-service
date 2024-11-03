@@ -20,12 +20,11 @@ export default class BalanceRepo {
     userId: number,
     balance: number,
     currency: string
-  ): Promise<Balance> {
-    const result = await this.pool.query(
+  ): Promise<void> {
+    await this.pool.query(
       "INSERT INTO balance (user_id, balance, currency) VALUES ($1, $2, $3)",
       [userId, balance, currency]
     );
-    return result.rows[0];
   }
   async deleteBalanceByUserId(userId: number): Promise<void> {
     await this.pool.query("DELETE FROM balance WHERE user_id = $1", [userId]);

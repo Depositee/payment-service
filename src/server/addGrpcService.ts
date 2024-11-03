@@ -8,6 +8,9 @@ export default function addPortToServer(grpcCore: GrpcCore, server: Server) {
     ),
   });
   server.addService(grpcCore.balancePort.getGrpcService(), {
+    getBalanceByUserId: grpcCore.balancePort.GetBalanceByUserId.bind(
+      grpcCore.balancePort
+    ),
     addBalance: grpcCore.balancePort.AddBalance.bind(grpcCore.balancePort),
   });
 }

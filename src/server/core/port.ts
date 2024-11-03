@@ -8,7 +8,10 @@ export default function InitPortCore(serviceCores: ServiceCores): PortCores {
       paymentPort: new PaymentPort(
         serviceCores.getPaymentHistoryByUserIdService
       ),
-      balancePort: new BalancePort(serviceCores.addBalanceService),
+      balancePort: new BalancePort(
+        serviceCores.getBalanceByUserIdService,
+        serviceCores.addBalanceService
+      ),
     },
   };
 }
