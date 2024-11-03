@@ -8,6 +8,7 @@ service PaymentService {
 }
 
 service BalanceService {
+    rpc AddBalance(Balance) returns (Balance) {}
     rpc GetBalanceByUserId(UserId) returns (Balance) {}
 }
 

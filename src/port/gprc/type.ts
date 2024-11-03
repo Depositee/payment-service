@@ -1,3 +1,4 @@
 import { PaymentServiceService } from "./gen/protos/payment";
-type GrpcService = PaymentServiceService
+import { BalanceServiceService } from "./gen/protos/payment";
+type GrpcService = PaymentServiceService | BalanceServiceService;
 export default GrpcService;

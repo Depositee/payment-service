@@ -15,7 +15,7 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "start": "npx ts-node cmd/main.ts",
-    "gen": "protoc --plugin=protoc-gen-ts_proto=.\\node_modules\\.bin\\protoc-gen-ts_proto.cmd --ts_proto_out=./src/port/gprc/gen ./protos/payment.proto --ts_proto_opt=outputServices=grpc-js,env=node,esModuleInterop=true",
+    "gen": "protoc --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src/port/gprc/gen ./protos/payment.proto --ts_proto_opt=outputServices=grpc-js,env=node,esModuleInterop=true",
     "proto:build": "cd proto; buf build; cd ..",
     "codegen:buf": "cd proto; buf generate; cd .."
   },
