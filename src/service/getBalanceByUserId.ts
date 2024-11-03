@@ -7,12 +7,7 @@ export default class GetBalanceByUserIdService {
     try {
       let result = await this.balanceRepo.getBalanceByUserId(userId);
       if (!result) {
-        await this.balanceRepo.createBalance(userId, 0, "THB");
-        return {
-          user_id: userId,
-          balance: 0,
-          currency: "THB",
-        };
+        result = await this.balanceRepo.createBalance(userId, 0, "THB");
       }
       return result;
     } catch (error) {

@@ -10,21 +10,26 @@ export default class BalanceRepo {
     );
     return result.rows[0];
   }
-  async updateBalanceByUserId(userId: number, balance: number): Promise<void> {
-    await this.pool.query(
-      "UPDATE balance SET balance = $1 WHERE user_id = $2",
+  async updateBalanceByUserId(
+    userId: number,
+    balance: number
+  ): Promise<Balance> {
+    const result = await this.pool.query(
+      "UPDATE balance SET balance = $1 WHERE user_id = $2 RETURNING *",
       [balance, userId]
     );
+    return result.rows[0];
   }
   async createBalance(
     userId: number,
     balance: number,
     currency: string
-  ): Promise<void> {
-    await this.pool.query(
-      "INSERT INTO balance (user_id, balance, currency) VALUES ($1, $2, $3)",
+  ): Promise<Balance> {
+    const result = await this.pool.query(
+      "INSERT INTO balance (user_id, balance, currency) VALUES ($1, $2, $3) RETURNING *",
       [userId, balance, currency]
     );
+    return result.rows[0];
   }
   async deleteBalanceByUserId(userId: number): Promise<void> {
     await this.pool.query("DELETE FROM balance WHERE user_id = $1", [userId]);

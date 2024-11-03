@@ -11,7 +11,6 @@ export default async function GetBalanceByUserId(
   const requestData = call.request;
   try {
     const result = await GetBalanceByUserIdService.Handle(requestData.id);
-    console.log(result);
     const response: BalanceProto = mapBalanceToBalanceProto(result);
     callback(null, response);
   } catch (error) {
