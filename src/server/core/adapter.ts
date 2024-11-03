@@ -7,6 +7,7 @@ export default function InitAdapterCore(pool: Pool): AdapterCores {
   return {
     db: {
       postgresql: {
+        pool,
         paymentRepo: new PaymentRepo(pool),
         balanceRepo: new BalanceRepo(pool),
       },

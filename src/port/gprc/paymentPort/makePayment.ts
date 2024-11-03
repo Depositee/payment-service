@@ -1,5 +1,6 @@
 import Payment from "../../../adapter/db/PostgreSQL/payment/type";
-import { MakePaymentService } from "../../../service/makePayment";
+import MakePaymentService from "../../../service/makePayment";
+import convertPgTimestampToDate from "../../../utils/convertPGTimeStamp2DateTIme";
 import {
   Payment as PaymentProto,
   PaymentResponse,

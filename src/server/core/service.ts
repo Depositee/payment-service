@@ -3,6 +3,7 @@ import ServiceCores from "./service.type";
 import GetPaymentHistoryByUserIdService from "../../service/getAllPaymentByUserId";
 import GetBalanceByUserIdService from "../../service/getBalanceByUserId";
 import AddBalanceService from "../../service/addBalance";
+import MakePaymentService from "../../service/makePayment";
 export default function initServiceCore(
   adapterCores: AdapterCores
 ): ServiceCores {
@@ -14,6 +15,11 @@ export default function initServiceCore(
       adapterCores.db.postgresql.balanceRepo
     ),
     getBalanceByUserIdService: new GetBalanceByUserIdService(
+      adapterCores.db.postgresql.balanceRepo
+    ),
+    makePaymentService: new MakePaymentService(
+      adapterCores.db.postgresql.pool,
+      adapterCores.db.postgresql.paymentRepo,
       adapterCores.db.postgresql.balanceRepo
     ),
   };

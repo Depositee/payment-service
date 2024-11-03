@@ -1,9 +1,10 @@
 import PaymentRepo from "../adapter/db/PostgreSQL/payment/repo";
 import BalanceRepo from "../adapter/db/PostgreSQL/balance/repo";
 import { Pool } from "pg";
+import { PoolClient } from "pg";
 import Payment from "../adapter/db/PostgreSQL/payment/type";
 
-export class MakePaymentService {
+export default class MakePaymentService {
   constructor(
     private pool: Pool,
     private paymentRepo: PaymentRepo,
@@ -14,6 +15,7 @@ export class MakePaymentService {
     receiverId: number,
     amount: number
   ): Promise<Payment> {
+    const poolClient = await this.pool.connect();
     const senderBalance = await this.balanceRepo.getBalanceByUserId(senderId);
     if (senderBalance.balance < amount) {
       throw new Error("Insufficient balance");
@@ -22,26 +24,32 @@ export class MakePaymentService {
       receiverId
     );
     try {
-      this, await this.pool.query("BEGIN");
+      await this.pool.query("BEGIN");
       await this.balanceRepo.updateBalanceByUserId(
         senderId,
-        senderBalance.balance - amount
+        Number(senderBalance.balance) - Number(amount),
+        poolClient
       );
       await this.balanceRepo.updateBalanceByUserId(
         receiverId,
-        receiverBalance.balance + amount
+        Number(receiverBalance.balance) + Number(amount),
+        poolClient
       );
       const result = this.paymentRepo.createPaymentHistory(
         senderId,
         receiverId,
         amount,
-        "THB"
+        "THB",
+        undefined,
+        poolClient
       );
-      this, await this.pool.query("COMMIT");
+      await poolClient.query("COMMIT");
       return result;
     } catch (e) {
-      this, await this.pool.query("ROLLBACK");
+      await poolClient.query("ROLLBACK");
       throw e;
+    } finally {
+      poolClient.release(); // Release the client back to the pool
     }
   }
 }

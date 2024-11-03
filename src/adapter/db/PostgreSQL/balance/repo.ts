@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+import { Pool, PoolClient } from "pg";
 import Balance from "./type";
 
 export default class BalanceRepo {
@@ -12,8 +12,16 @@ export default class BalanceRepo {
   }
   async updateBalanceByUserId(
     userId: number,
-    balance: number
+    balance: number,
+    client?: PoolClient
   ): Promise<Balance> {
+    if (client) {
+      const result = await client.query(
+        "UPDATE balance SET balance = $1 WHERE user_id = $2 RETURNING *",
+        [balance, userId]
+      );
+      return result.rows[0];
+    }
     const result = await this.pool.query(
       "UPDATE balance SET balance = $1 WHERE user_id = $2 RETURNING *",
       [balance, userId]

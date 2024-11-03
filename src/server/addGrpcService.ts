@@ -6,6 +6,7 @@ export default function addPortToServer(grpcCore: GrpcCore, server: Server) {
     getAllPaymentByUserId: grpcCore.paymentPort.GetAllPaymentByUserId.bind(
       grpcCore.paymentPort
     ),
+    makePayment: grpcCore.paymentPort.MakePayment.bind(grpcCore.paymentPort),
   });
   server.addService(grpcCore.balancePort.getGrpcService(), {
     getBalanceByUserId: grpcCore.balancePort.GetBalanceByUserId.bind(

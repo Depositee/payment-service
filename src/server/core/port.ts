@@ -6,7 +6,8 @@ export default function InitPortCore(serviceCores: ServiceCores): PortCores {
   return {
     gprc: {
       paymentPort: new PaymentPort(
-        serviceCores.getPaymentHistoryByUserIdService
+        serviceCores.getPaymentHistoryByUserIdService,
+        serviceCores.makePaymentService
       ),
       balancePort: new BalancePort(
         serviceCores.getBalanceByUserIdService,
