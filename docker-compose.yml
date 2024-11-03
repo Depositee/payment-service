@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  payment-services:
+    container_name: payment-services
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "50051:50051"
+    networks:
+      - payment-network
+    depends_on:
+      - payment-db
+
+  payment-db:
+    container_name: payment-db
+    image: postgres:latest
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: guest
+      POSTGRES_DB: postgres
+    networks:
+      - payment-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+networks:
+  payment-network:
+    driver: bridge
+volumes:
+  postgres_data:

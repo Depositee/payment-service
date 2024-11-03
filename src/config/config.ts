@@ -1,24 +1,23 @@
-import {existsSync,readFileSync} from 'fs';
-import Config from './config.type';
+import { config as loadEnv } from "dotenv";
+import Config from "./config.type";
 
-export default function getConfig():Config{
-    const LOCAL_CONFIG_FILE_PATH = './config/config.local.json';
-    const DEFAULT_CONFIG_FILE_PATH = './config/config.json';
-  
-    if (existsSync(LOCAL_CONFIG_FILE_PATH)) {
-      return readConfigFile(LOCAL_CONFIG_FILE_PATH);
-    } else {
-      return readConfigFile(DEFAULT_CONFIG_FILE_PATH);
-    }
+// Load environment variables from .env file
+loadEnv();
+
+export default function getConfig(): Config {
+  // Read values from environment variables
+  const serverConfig = {
+    host: process.env.SERVER_CONFIG_HOST || "localhost", // Default value
+    port: parseInt(process.env.SERVER_CONFIG_PORT || "50051", 10), // Default value
   };
 
+  const databaseConfig = {
+    host: process.env.DATABASE_CONFIG_HOST || "localhost", // Default value
+    port: parseInt(process.env.DATABASE_CONFIG_PORT || "5432", 10), // Default value
+    database: process.env.DATABASE_CONFIG_DATABASE || "postgres", // Default value
+    user: process.env.DATABASE_CONFIG_USER || "postgres", // Default value
+    password: process.env.DATABASE_CONFIG_PASSWORD || "guest", // Default value
+  };
 
-function readConfigFile(path: string): Config{
-  const rawData = readFileSync(path, 'utf8');
-  const configJson = JSON.parse(rawData);
-  return new Config(
-    configJson.serverConfig, 
-    configJson.databaseConfig
-);
-};
-
+  return new Config(serverConfig, databaseConfig);
+}
