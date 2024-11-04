@@ -1,12 +1,10 @@
 FROM node:16.18-buster-slim
 
-WORKDIR /usr/src/app
+COPY . ./app
 
-COPY package*.json ./
+WORKDIR /app
 
 RUN npm install
-
-COPY . .
 
 EXPOSE 50051
 

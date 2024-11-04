@@ -9,7 +9,7 @@ services:
     ports:
       - "50051:50051"
     networks:
-      - payment-network
+      - backend
     depends_on:
       - payment-db
 
@@ -23,12 +23,12 @@ services:
       POSTGRES_PASSWORD: guest
       POSTGRES_DB: postgres
     networks:
-      - payment-network
+      - backend
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
 networks:
-  payment-network:
-    driver: bridge
+  backend:
+    external: true
 volumes:
   postgres_data:
