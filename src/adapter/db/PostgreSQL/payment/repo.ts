@@ -3,7 +3,7 @@ import Payment from "./type";
 
 export default class PaymentRepo {
   constructor(private pool: Pool) {}
-  async getPaymentHistoryByUserId(userId: number): Promise<Payment[]> {
+  async getPaymentHistoryByUserId(userId: string): Promise<Payment[]> {
     const result = await this.pool.query(
       "SELECT * FROM payment WHERE sender_id = $1",
       [userId]
@@ -11,8 +11,8 @@ export default class PaymentRepo {
     return result.rows;
   }
   async createPaymentHistory(
-    senderId: number,
-    receiverId: number,
+    senderId: string,
+    receiverId: string,
     amount: number,
     currency: string,
     status: string = "completed",

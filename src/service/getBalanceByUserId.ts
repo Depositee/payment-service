@@ -3,7 +3,7 @@ import Balance from "../adapter/db/PostgreSQL/balance/type";
 
 export default class GetBalanceByUserIdService {
   constructor(private balanceRepo: BalanceRepo) {}
-  async Handle(userId: number): Promise<Balance> {
+  async Handle(userId: string): Promise<Balance> {
     try {
       let result = await this.balanceRepo.getBalanceByUserId(userId);
       if (!result) {

@@ -3,7 +3,7 @@ import { Pool } from "pg";
 export default async function initializeBalanceTable(pool: Pool) {
   const createTableQuery = `
       CREATE TABLE IF NOT EXISTS balance (
-        user_id INTEGER PRIMARY KEY,
+        user_id VARCHAR(48) PRIMARY KEY,
         balance NUMERIC(10, 2) NOT NULL,
         currency VARCHAR(3) NOT NULL,
         created_at TIMESTAMPTZ DEFAULT NOW(),

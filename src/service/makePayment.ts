@@ -11,8 +11,8 @@ export default class MakePaymentService {
     private balanceRepo: BalanceRepo
   ) {}
   async Handle(
-    senderId: number,
-    receiverId: number,
+    senderId: string,
+    receiverId: string,
     amount: number
   ): Promise<Payment> {
     const poolClient = await this.pool.connect();

@@ -4,8 +4,8 @@ export default async function initializePaymentTable(pool: Pool) {
   const createTableQuery = `
     CREATE TABLE IF NOT EXISTS payment (
       id SERIAL PRIMARY KEY,
-      sender_id INTEGER NOT NULL,
-      reciver_id INTEGER NOT NULL,
+      sender_id VARCHAR(48) NOT NULL,
+      reciver_id VARCHAR(48) NOT NULL,
       amount NUMERIC(10, 2) NOT NULL,
       currency VARCHAR(3) NOT NULL,
       payment_date TIMESTAMPTZ,

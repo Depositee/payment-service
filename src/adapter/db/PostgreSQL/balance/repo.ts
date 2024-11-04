@@ -3,7 +3,7 @@ import Balance from "./type";
 
 export default class BalanceRepo {
   constructor(private pool: Pool) {}
-  async getBalanceByUserId(userId: number): Promise<Balance> {
+  async getBalanceByUserId(userId: string): Promise<Balance> {
     const result = await this.pool.query(
       "SELECT * FROM balance WHERE user_id = $1",
       [userId]
@@ -11,7 +11,7 @@ export default class BalanceRepo {
     return result.rows[0];
   }
   async updateBalanceByUserId(
-    userId: number,
+    userId: string,
     balance: number,
     client?: PoolClient
   ): Promise<Balance> {
@@ -29,7 +29,7 @@ export default class BalanceRepo {
     return result.rows[0];
   }
   async createBalance(
-    userId: number,
+    userId: string,
     balance: number,
     currency: string
   ): Promise<Balance> {

@@ -26,20 +26,20 @@ export interface Empty {
 }
 
 export interface UserId {
-  id: number;
+  id: string;
 }
 
 export interface Payment {
-  senderId: number;
-  receiverId: number;
+  senderId: string;
+  receiverId: string;
   amount: number;
   currency: string;
 }
 
 export interface PaymentResponse {
   id: number;
-  senderId: number;
-  receiverId: number;
+  senderId: string;
+  receiverId: string;
   amount: number;
   currency: string;
   createdAt: Date | undefined;
@@ -47,7 +47,7 @@ export interface PaymentResponse {
 }
 
 export interface Balance {
-  userId: number;
+  userId: string;
   balance: number;
   currency: string;
 }
@@ -100,13 +100,13 @@ export const Empty: MessageFns<Empty> = {
 };
 
 function createBaseUserId(): UserId {
-  return { id: 0 };
+  return { id: "" };
 }
 
 export const UserId: MessageFns<UserId> = {
   encode(message: UserId, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== 0) {
-      writer.uint32(8).int32(message.id);
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
     }
     return writer;
   },
@@ -119,11 +119,11 @@ export const UserId: MessageFns<UserId> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.id = reader.int32();
+          message.id = reader.string();
           continue;
         }
       }
@@ -136,13 +136,13 @@ export const UserId: MessageFns<UserId> = {
   },
 
   fromJSON(object: any): UserId {
-    return { id: isSet(object.id) ? globalThis.Number(object.id) : 0 };
+    return { id: isSet(object.id) ? globalThis.String(object.id) : "" };
   },
 
   toJSON(message: UserId): unknown {
     const obj: any = {};
-    if (message.id !== 0) {
-      obj.id = Math.round(message.id);
+    if (message.id !== "") {
+      obj.id = message.id;
     }
     return obj;
   },
@@ -152,22 +152,22 @@ export const UserId: MessageFns<UserId> = {
   },
   fromPartial<I extends Exact<DeepPartial<UserId>, I>>(object: I): UserId {
     const message = createBaseUserId();
-    message.id = object.id ?? 0;
+    message.id = object.id ?? "";
     return message;
   },
 };
 
 function createBasePayment(): Payment {
-  return { senderId: 0, receiverId: 0, amount: 0, currency: "" };
+  return { senderId: "", receiverId: "", amount: 0, currency: "" };
 }
 
 export const Payment: MessageFns<Payment> = {
   encode(message: Payment, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.senderId !== 0) {
-      writer.uint32(8).int32(message.senderId);
+    if (message.senderId !== "") {
+      writer.uint32(10).string(message.senderId);
     }
-    if (message.receiverId !== 0) {
-      writer.uint32(16).int32(message.receiverId);
+    if (message.receiverId !== "") {
+      writer.uint32(18).string(message.receiverId);
     }
     if (message.amount !== 0) {
       writer.uint32(24).int32(message.amount);
@@ -186,19 +186,19 @@ export const Payment: MessageFns<Payment> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.senderId = reader.int32();
+          message.senderId = reader.string();
           continue;
         }
         case 2: {
-          if (tag !== 16) {
+          if (tag !== 18) {
             break;
           }
 
-          message.receiverId = reader.int32();
+          message.receiverId = reader.string();
           continue;
         }
         case 3: {
@@ -228,8 +228,8 @@ export const Payment: MessageFns<Payment> = {
 
   fromJSON(object: any): Payment {
     return {
-      senderId: isSet(object.senderId) ? globalThis.Number(object.senderId) : 0,
-      receiverId: isSet(object.receiverId) ? globalThis.Number(object.receiverId) : 0,
+      senderId: isSet(object.senderId) ? globalThis.String(object.senderId) : "",
+      receiverId: isSet(object.receiverId) ? globalThis.String(object.receiverId) : "",
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
       currency: isSet(object.currency) ? globalThis.String(object.currency) : "",
     };
@@ -237,11 +237,11 @@ export const Payment: MessageFns<Payment> = {
 
   toJSON(message: Payment): unknown {
     const obj: any = {};
-    if (message.senderId !== 0) {
-      obj.senderId = Math.round(message.senderId);
+    if (message.senderId !== "") {
+      obj.senderId = message.senderId;
     }
-    if (message.receiverId !== 0) {
-      obj.receiverId = Math.round(message.receiverId);
+    if (message.receiverId !== "") {
+      obj.receiverId = message.receiverId;
     }
     if (message.amount !== 0) {
       obj.amount = Math.round(message.amount);
@@ -257,8 +257,8 @@ export const Payment: MessageFns<Payment> = {
   },
   fromPartial<I extends Exact<DeepPartial<Payment>, I>>(object: I): Payment {
     const message = createBasePayment();
-    message.senderId = object.senderId ?? 0;
-    message.receiverId = object.receiverId ?? 0;
+    message.senderId = object.senderId ?? "";
+    message.receiverId = object.receiverId ?? "";
     message.amount = object.amount ?? 0;
     message.currency = object.currency ?? "";
     return message;
@@ -266,7 +266,7 @@ export const Payment: MessageFns<Payment> = {
 };
 
 function createBasePaymentResponse(): PaymentResponse {
-  return { id: 0, senderId: 0, receiverId: 0, amount: 0, currency: "", createdAt: undefined, updatedAt: undefined };
+  return { id: 0, senderId: "", receiverId: "", amount: 0, currency: "", createdAt: undefined, updatedAt: undefined };
 }
 
 export const PaymentResponse: MessageFns<PaymentResponse> = {
@@ -274,11 +274,11 @@ export const PaymentResponse: MessageFns<PaymentResponse> = {
     if (message.id !== 0) {
       writer.uint32(8).int32(message.id);
     }
-    if (message.senderId !== 0) {
-      writer.uint32(16).int32(message.senderId);
+    if (message.senderId !== "") {
+      writer.uint32(18).string(message.senderId);
     }
-    if (message.receiverId !== 0) {
-      writer.uint32(24).int32(message.receiverId);
+    if (message.receiverId !== "") {
+      writer.uint32(26).string(message.receiverId);
     }
     if (message.amount !== 0) {
       writer.uint32(32).int32(message.amount);
@@ -311,19 +311,19 @@ export const PaymentResponse: MessageFns<PaymentResponse> = {
           continue;
         }
         case 2: {
-          if (tag !== 16) {
+          if (tag !== 18) {
             break;
           }
 
-          message.senderId = reader.int32();
+          message.senderId = reader.string();
           continue;
         }
         case 3: {
-          if (tag !== 24) {
+          if (tag !== 26) {
             break;
           }
 
-          message.receiverId = reader.int32();
+          message.receiverId = reader.string();
           continue;
         }
         case 4: {
@@ -370,8 +370,8 @@ export const PaymentResponse: MessageFns<PaymentResponse> = {
   fromJSON(object: any): PaymentResponse {
     return {
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
-      senderId: isSet(object.senderId) ? globalThis.Number(object.senderId) : 0,
-      receiverId: isSet(object.receiverId) ? globalThis.Number(object.receiverId) : 0,
+      senderId: isSet(object.senderId) ? globalThis.String(object.senderId) : "",
+      receiverId: isSet(object.receiverId) ? globalThis.String(object.receiverId) : "",
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
       currency: isSet(object.currency) ? globalThis.String(object.currency) : "",
       createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
@@ -384,11 +384,11 @@ export const PaymentResponse: MessageFns<PaymentResponse> = {
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
     }
-    if (message.senderId !== 0) {
-      obj.senderId = Math.round(message.senderId);
+    if (message.senderId !== "") {
+      obj.senderId = message.senderId;
     }
-    if (message.receiverId !== 0) {
-      obj.receiverId = Math.round(message.receiverId);
+    if (message.receiverId !== "") {
+      obj.receiverId = message.receiverId;
     }
     if (message.amount !== 0) {
       obj.amount = Math.round(message.amount);
@@ -411,8 +411,8 @@ export const PaymentResponse: MessageFns<PaymentResponse> = {
   fromPartial<I extends Exact<DeepPartial<PaymentResponse>, I>>(object: I): PaymentResponse {
     const message = createBasePaymentResponse();
     message.id = object.id ?? 0;
-    message.senderId = object.senderId ?? 0;
-    message.receiverId = object.receiverId ?? 0;
+    message.senderId = object.senderId ?? "";
+    message.receiverId = object.receiverId ?? "";
     message.amount = object.amount ?? 0;
     message.currency = object.currency ?? "";
     message.createdAt = object.createdAt ?? undefined;
@@ -422,13 +422,13 @@ export const PaymentResponse: MessageFns<PaymentResponse> = {
 };
 
 function createBaseBalance(): Balance {
-  return { userId: 0, balance: 0, currency: "" };
+  return { userId: "", balance: 0, currency: "" };
 }
 
 export const Balance: MessageFns<Balance> = {
   encode(message: Balance, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.userId !== 0) {
-      writer.uint32(8).int32(message.userId);
+    if (message.userId !== "") {
+      writer.uint32(10).string(message.userId);
     }
     if (message.balance !== 0) {
       writer.uint32(16).int32(message.balance);
@@ -447,11 +447,11 @@ export const Balance: MessageFns<Balance> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.userId = reader.int32();
+          message.userId = reader.string();
           continue;
         }
         case 2: {
@@ -481,7 +481,7 @@ export const Balance: MessageFns<Balance> = {
 
   fromJSON(object: any): Balance {
     return {
-      userId: isSet(object.userId) ? globalThis.Number(object.userId) : 0,
+      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
       balance: isSet(object.balance) ? globalThis.Number(object.balance) : 0,
       currency: isSet(object.currency) ? globalThis.String(object.currency) : "",
     };
@@ -489,8 +489,8 @@ export const Balance: MessageFns<Balance> = {
 
   toJSON(message: Balance): unknown {
     const obj: any = {};
-    if (message.userId !== 0) {
-      obj.userId = Math.round(message.userId);
+    if (message.userId !== "") {
+      obj.userId = message.userId;
     }
     if (message.balance !== 0) {
       obj.balance = Math.round(message.balance);
@@ -506,7 +506,7 @@ export const Balance: MessageFns<Balance> = {
   },
   fromPartial<I extends Exact<DeepPartial<Balance>, I>>(object: I): Balance {
     const message = createBaseBalance();
-    message.userId = object.userId ?? 0;
+    message.userId = object.userId ?? "";
     message.balance = object.balance ?? 0;
     message.currency = object.currency ?? "";
     return message;
