@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  payment-services:
+    container_name: payment-services
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "50051:50051"
+    environment:
+      SERVER_CONFIG_HOST: localhost
+      SERVER_CONFIG_PORT: 50051
+      DATABASE_CONFIG_HOST: payment-db
+      DATABASE_CONFIG_PORT: 5432
+      DATABASE_CONFIG_USER: postgres
+      DATABASE_CONFIG_PASSWORD: guest
+      DATABASE_CONFIG_DATABASE: postgres
+    networks:
+      - backend
+    depends_on:
+      - payment-db
+
+  payment-db:
+    container_name: payment-db
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: guest
+      POSTGRES_DB: postgres
+    networks:
+      - backend
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+networks:
+  backend:
+    external: true
+volumes:
+  postgres_data:
