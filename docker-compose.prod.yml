@@ -6,8 +6,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "50051:50051"
     environment:
       SERVER_CONFIG_HOST: localhost
       SERVER_CONFIG_PORT: 50051
