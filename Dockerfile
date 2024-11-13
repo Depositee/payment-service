@@ -1,4 +1,4 @@
-FROM node:16.18-buster-slim
+FROM node:18.20-buster-slim
 
 COPY . ./app
 
